@@ -683,8 +683,8 @@
         // 直接进一次uwsgi提供的页面后就有csrf token了……
         // 同时也能进后台了……
         // 超级迷惑……
-        console.log(window.location.hostname+":57888")
-        window.open(window.location.hostname+":57888")
+        // console.log(window.location.hostname)
+        window.open('http://'+window.location.hostname+':57888/sitepanel')
       },
 
       onSearch() {
