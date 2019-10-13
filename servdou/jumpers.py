@@ -19,7 +19,7 @@ def add_idiom(request):
         idiom = Chengyu.objects.filter(word=request.POST.get('word'))
         if idiom.count() > 0:
             idiom = idiom[0]
-            idiom.pos+=1
+            idiom.pos += 1
             print(request.POST.get('word'), 'already existed')
             if request.POST.get('meaning') is None or request.POST.get('meaning') == '':
                 idiom.save()
@@ -123,8 +123,8 @@ def show_last_idiom(request):
 def get_idiom(request):
     response = {}
     word = request.GET.get('word')
-    assert isinstance(word,str)
-    word=word.strip()
+    assert isinstance(word, str)
+    word = word.strip()
     print('Searching', word)
     try:
         idiom = Chengyu.objects.filter(word=word)
@@ -136,6 +136,32 @@ def get_idiom(request):
             response['error_num'] = 1
             return JsonResponse(response)
         response['idiom'] = {'pk': idiom[0].id, 'fields': {'word': idiom[0].word, 'meaning': idiom[0].meaning}, }
+        response['msg'] = 'success'
+        response['error_num'] = 0
+    except Exception as e:
+        response['msg'] = str(e)
+        response['error_num'] = 1
+    return JsonResponse(response)
+
+
+@require_http_methods(["GET"])
+def get_idioms(request):
+    response = {}
+    word = request.GET.get('word')
+    assert isinstance(word, str)
+    word = word.strip()
+    print('get_idiom*s*: Searching', word)
+    try:
+        idiom = Chengyu.objects.filter(word__contains=word)
+        print(idiom.count())
+        for ido in idiom:
+            print(ido.word, ido.meaning)
+        if idiom.count() == 0:
+            response['msg'] = 'no such idiom'
+            response['error_num'] = 1
+            return JsonResponse(response)
+        response['idioms'] = [{'pk': idi.id, 'fields': {'word': idi.word, 'meaning': idi.meaning, 'pos': idi.pos}, } for
+                              idi in idiom]
         response['msg'] = 'success'
         response['error_num'] = 0
     except Exception as e:
@@ -301,12 +327,12 @@ def upl_handler(request):
                         idou = idiom[0]
                         if ido['mean'] != '':
                             idou.meaning = ido['mean']
-                            idou.pos+=1
+                            idou.pos += 1
                             idou.save()
                             ins += 1
                         else:
                             null_meaning += 1
-                            idou.pos+=1
+                            idou.pos += 1
                             idou.save()
                     else:
                         idiom = Chengyu(
@@ -327,7 +353,7 @@ def upl_handler(request):
                     idiom = Chengyu.objects.filter(word=ido['idiom'])
                     if idiom.count() > 0:
                         existed += 1
-                        idiom[0].pos+=1
+                        idiom[0].pos += 1
                         idiom[0].save()
                     else:
                         idiom = Chengyu(

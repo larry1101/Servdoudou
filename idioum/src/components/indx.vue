@@ -38,6 +38,11 @@
               <mu-list-item-title>覆盖数据库</mu-list-item-title>
             </mu-list-item-content>
           </mu-list-item>
+          <mu-list-item button @click="snc_msg('info','info','自行前往Servdou哦');manmenuopen=false" ripple-color="red">
+            <mu-list-item-content>
+              <mu-list-item-title style="color: #f00;">Servdou</mu-list-item-title>
+            </mu-list-item-content>
+          </mu-list-item>
           <mu-list-item button @click="server_ipp='http://127.0.0.1:8000/';manmenuopen=false" ripple-color="red">
             <mu-list-item-content>
               <mu-list-item-title style="color: #f00;">npm building @ localhost:8080</mu-list-item-title>
@@ -213,12 +218,41 @@
             <mu-icon value="search"></mu-icon>
           </mu-button>
         </mu-flex>
-        <mu-flex justify-content="between">
-          {{val_sis}}
-        </mu-flex>
-        <mu-flex justify-content="between">
-          {{val_sm}}
-        </mu-flex>
+
+        <div>
+          <mu-flex justify-content="between">
+            {{val_sis}}
+          </mu-flex>
+          <!--<mu-flex justify-content="between">-->
+          <!--{{val_sm}}-->
+          <!--</mu-flex>-->
+        </div>
+
+        <div>
+          <mu-list textline="three-line" class="align-left" @change="onitemclk">
+            <template v-for="item in search_res">
+              <mu-list-item button :value="item">
+                <mu-list-item-content>
+                  <mu-list-item-title class="li-ltem-t">
+                    <mu-flex class="word-title" justify-content="end">
+                      <mu-flex fill>
+                        <div>{{item.fields.word}}</div>
+                      </mu-flex>
+                      <mu-flex class="flex-demo" justify-content="center" style="visibility: hidden;">
+                        <span slot="right">{{item.pk}}</span>
+                      </mu-flex>
+                    </mu-flex>
+                  </mu-list-item-title>
+                  <mu-list-item-sub-title class="li-ltem-sub-t">
+                    {{item.fields.meaning}}
+                  </mu-list-item-sub-title>
+                </mu-list-item-content>
+              </mu-list-item>
+              <mu-divider/>
+            </template>
+          </mu-list>
+        </div>
+
         <mu-flex justify-content="center" v-if="show_search_add">
           <mu-button full-width color="success" @click="quick_add_search">添加这个词</mu-button>
         </mu-flex>
@@ -321,8 +355,9 @@
 
         openSearch: false,
         val_si: '',
+        search_res: [],
         val_sis: '',
-        val_sm: '',
+        // val_sm: '',
         show_search_add: false,
 
         adi: 0,
@@ -684,7 +719,7 @@
         // 同时也能进后台了……
         // 超级迷惑……
         // console.log(window.location.hostname)
-        window.open('http://'+window.location.hostname+':57888/sitepanel')
+        window.open('http://' + window.location.hostname + ':57888/sitepanel')
       },
 
       onSearch() {
@@ -699,20 +734,22 @@
       },
 
       searchido() {
-        this.$axios.get(this.server_ipp + 'api/get_idiom', {
+        this.$axios.get(this.server_ipp + 'api/get_idioms', {
           params: {
             word: this.val_si,
           }
         }).then((res) => {
           if (res.data.error_num === 0) {
             this.val_si = ''
-            this.val_sis = res.data.idiom.fields.word
-            this.val_sm = res.data.idiom.fields.meaning
+            this.search_res = res.data.idioms
+            this.val_sis = ''
+            // this.val_sm = res.data.idiom.fields.meaning
             this.show_search_add = false
           } else {
             // this.val_si=''
             this.val_sis = '查找失败'
-            this.val_sm = ''
+            this.search_res = []
+            // this.val_sm = ''
             this.show_search_add = true
           }
         }).catch((error) => {
