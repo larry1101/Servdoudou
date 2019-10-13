@@ -59,6 +59,9 @@
       <mu-button icon slot="action" color="#fff" @click="snc.open = false">
         <mu-icon value="cancel"></mu-icon>
       </mu-button>
+      <mu-button slot="action" color="warning" @click="fix_in_57888" v-if="snc.show_fix">
+        尝试修复！
+      </mu-button>
     </mu-snackbar>
 
     <div class="contou" :style="contoup" v-resize="onmResize">
@@ -313,6 +316,7 @@
           msg: '-',
           timeout: 2000,
           open: false,
+          show_fix: false,
         },
 
         openSearch: false,
@@ -661,9 +665,25 @@
         this.snc.msg = msg
         this.snc.timeout = timeout
         this.snc.open = true
+
+        if (color === 'error') {
+          this.snc.show_fix = true
+          this.snc.timeout = 3999
+        } else {
+          this.snc.show_fix = false
+        }
+
         setTimeout(() => {
           this.snc.open = false
         }, this.snc.timeout)
+      },
+
+      fix_in_57888() {
+        // 如果index.html由nginx提供，那么就没有csrftoken，这样就没法post
+        // 直接进一次uwsgi提供的页面后就有csrf token了……
+        // 同时也能进后台了……
+        // 超级迷惑……
+        window.open(window.location.hostname+":57888")
       },
 
       onSearch() {
@@ -721,7 +741,7 @@
             this.snc_msg('info', 'warning', '已存在，意思一样不会更新')
           else if (res.data.error_num === 3)
             this.snc_msg('info', 'info', '已存在，已更新')
-          this.val_si=''
+          this.val_si = ''
           this.show_search_add = false
           this.refresh()
         }).catch((error) => {

@@ -131,5 +131,6 @@ STATIC_ROOT = 'allstatic/'
 # Add for vuejs
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "idioum/dist/static"),
+    os.path.join(BASE_DIR, "idioum/dist"),
 
 ]
