@@ -27,4 +27,4 @@ idioum
 + 升级SQLite3
 + 安装uwsgi & 配置ini
 + 安装nginx & 配置conf
-+ 运行就可了
++ 运行就可了(uwsgi可后台：&)
