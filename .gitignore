@@ -2,9 +2,6 @@
 .DS_Store
 .coverage
 
-idioum/node_modules/
-idioum/npm-debug.log
-idioum/package-lock.json
 node_modules/
 npm-debug.log
 package-lock.json
