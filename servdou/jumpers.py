@@ -89,7 +89,7 @@ def download_ido(request):
     print('Download idioms!')
     try:
         idiom = Chengyu.objects.all()
-        iods = [{'pk': ido.id, 'idiom': ido.word, 'mean': ido.meaning} for ido in idiom]
+        iods = [{'pk': ido.id, 'idiom': ido.word, 'mean': ido.meaning, 'pos': ido.pos} for ido in idiom]
         # for ido in idiom:
         #     iods[ido.id] =
         with open('ido.json', 'w')as jf:
@@ -375,7 +375,8 @@ def upl_handler(request):
                 for ido in idioums:
                     idiom = Chengyu(
                         word=ido['idiom'],
-                        meaning=ido['mean']
+                        meaning=ido['mean'],
+                        pos=ido['pos'] if 'pos' in ido else 130
                     )
                     idiom.save()
                 response['msg'] = 'Cleared'
