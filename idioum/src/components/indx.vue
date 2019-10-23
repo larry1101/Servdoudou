@@ -206,6 +206,9 @@
       </mu-appbar>
       <div style="padding: 24px;">
         <mu-flex justify-content="between" align-items="center">
+          <mu-button icon @click="val_si='';show_search_add=false" color="error">
+            <mu-icon value="clear"></mu-icon>
+          </mu-button>
           <mu-text-field
             ref="svi"
             v-model="val_si"
@@ -252,10 +255,11 @@
             </template>
           </mu-list>
         </div>
-
-        <mu-flex justify-content="center" v-if="show_search_add">
-          <mu-button full-width color="success" @click="quick_add_search">添加这个词</mu-button>
-        </mu-flex>
+        <mu-scale-transition>
+          <mu-flex justify-content="center" v-if="show_search_add">
+            <mu-button full-width color="success" @click="quick_add_search">添加这个词</mu-button>
+          </mu-flex>
+        </mu-scale-transition>
       </div>
     </mu-dialog>
 
@@ -734,6 +738,10 @@
       },
 
       searchido() {
+        if (this.val_si === '') {
+          this.snc_msg('info', 'warning', '没有词哦')
+          return
+        }
         this.$axios.get(this.server_ipp + 'api/get_idioms', {
           params: {
             word: this.val_si,
@@ -759,6 +767,10 @@
       },
 
       quick_add_search() {
+        if (this.val_si === '') {
+          this.snc_msg('info', 'warning', '没有词哦')
+          return
+        }
         this.$axios.post(
           this.server_ipp + 'api/add_idiom',
           this.$qs.stringify({
