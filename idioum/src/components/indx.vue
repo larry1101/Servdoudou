@@ -232,7 +232,7 @@
         </div>
 
         <div>
-          <mu-list textline="three-line" class="align-left" @change="onitemclk">
+          <mu-list textline="three-line" class="align-left" @change="(val)=>onitemclk(ido=val, from_search=true)">
             <template v-for="item in search_res">
               <mu-list-item button :value="item">
                 <mu-list-item-content>
@@ -363,6 +363,7 @@
         val_sis: '',
         // val_sm: '',
         show_search_add: false,
+        detail_from_search: false,
 
         adi: 0,
         adm: false,
@@ -614,11 +615,13 @@
         })
       },
 
-      onitemclk(ido) {
+      onitemclk(ido, from_search = false) {
+        console.log(ido,from_search)
         this.dlgW = ido.fields.word
         this.dlgM = ido.fields.meaning
         this.dlgid = ido.pk
         this.dlgPos = ido.fields.pos
+        this.detail_from_search = from_search
         this.openDetailDialog()
       },
 
@@ -690,8 +693,12 @@
             this.snc_msg('info', 'warning', '不会更新')
           else if (res.data.error_num === 3)
             this.snc_msg('info', 'info', '意思没变')
-          this.openDet = false;
           this.refresh()
+          if (this.detail_from_search) {
+            this.val_si = this.dlgW
+            this.searchido()
+          }
+          this.openDet = false;
         }).catch((error) => {
           console.log('Error:', error)
           this.snc_msg('warning', 'error', error)
@@ -723,7 +730,7 @@
         // 同时也能进后台了……
         // 超级迷惑……
         // console.log(window.location.hostname)
-        window.open('http://' + window.location.hostname + ':57888/sitepanel')
+        window.open('http://' + window.location.hostname + '/Servdou')
       },
 
       onSearch() {
@@ -792,7 +799,10 @@
           else if (res.data.error_num === 3)
             this.snc_msg('info', 'info', '已存在，已更新')
           this.val_si = ''
+          this.val_sis = ''
           this.show_search_add = false
+          this.$refs.svi.focus()
+          this.search_res = []
           this.refresh()
         }).catch((error) => {
           console.log('Error:', error)
