@@ -167,11 +167,11 @@
         <div>
           <mu-text-field
             ref="valdm"
-            v-model="dlgM" label="Ctrl + ← 提交"
+            v-model="dlgM" :label="dlglab"
             full-width label-float multi-line
             :rows="4" :rows-max="10" :max-length="250"
             :disabled="cannot_edit"
-            @keydown.ctrl.left="comfrim_edit"
+            @keydown.ctrl.alt="comfrim_edit"
           ></mu-text-field>
         </div>
       </div>
@@ -204,7 +204,7 @@
           <mu-icon value="arrow_back"></mu-icon>
         </mu-button>
       </mu-appbar>
-      <div style="padding: 24px;">
+      <div style="padding: 8px;">
         <mu-flex justify-content="between" align-items="center">
           <mu-button icon @click="val_si='';show_search_add=false" color="error">
             <mu-icon value="clear"></mu-icon>
@@ -231,30 +231,33 @@
           <!--</mu-flex>-->
         </div>
 
-        <div>
-          <mu-list textline="three-line" class="align-left" @change="(val)=>onitemclk(ido=val, from_search=true)">
-            <template v-for="item in search_res">
-              <mu-list-item button :value="item">
-                <mu-list-item-content>
-                  <mu-list-item-title class="li-ltem-t">
-                    <mu-flex class="word-title" justify-content="end">
-                      <mu-flex fill>
-                        <div>{{item.fields.word}}</div>
+        <mu-container :style="searchlist">
+          <mu-load-more>
+            <mu-list textline="three-line" class="align-left" @change="(val)=>onitemclk(ido=val, from_search=true)">
+              <template v-for="item in search_res">
+                <mu-list-item button :value="item">
+                  <mu-list-item-content>
+                    <mu-list-item-title class="li-ltem-t">
+                      <mu-flex class="word-title" justify-content="end">
+                        <mu-flex fill>
+                          <div>{{item.fields.word}}</div>
+                        </mu-flex>
+                        <mu-flex class="flex-demo" justify-content="center" style="visibility: hidden;">
+                          <span slot="right">{{item.pk}}</span>
+                        </mu-flex>
                       </mu-flex>
-                      <mu-flex class="flex-demo" justify-content="center" style="visibility: hidden;">
-                        <span slot="right">{{item.pk}}</span>
-                      </mu-flex>
-                    </mu-flex>
-                  </mu-list-item-title>
-                  <mu-list-item-sub-title class="li-ltem-sub-t">
-                    {{item.fields.meaning}}
-                  </mu-list-item-sub-title>
-                </mu-list-item-content>
-              </mu-list-item>
-              <mu-divider/>
-            </template>
-          </mu-list>
-        </div>
+                    </mu-list-item-title>
+                    <mu-list-item-sub-title class="li-ltem-sub-t">
+                      {{item.fields.meaning}}
+                    </mu-list-item-sub-title>
+                  </mu-list-item-content>
+                </mu-list-item>
+                <mu-divider/>
+              </template>
+            </mu-list>
+          </mu-load-more>
+
+        </mu-container>
         <mu-scale-transition>
           <mu-flex justify-content="center" v-if="show_search_add">
             <mu-button full-width color="success" @click="quick_add_search">添加这个词</mu-button>
@@ -387,7 +390,22 @@
           paddingBottom: this.contmb + 'px',
           height: this.winH + 'px',
         }
-      }
+      },
+      searchlist: function () {
+        return {
+          height: this.winH - 160 + 'px',
+          padding: '4px',
+          overflow: 'auto',
+          '-webkit-overflow-scrolling': 'touch',
+        }
+      },
+      dlglab: function () {
+        if (this.cannot_edit) {
+          return ""
+        } else {
+          return "Ctrl + Alt 提交"
+        }
+      },
     },
 
     methods: {
@@ -616,7 +634,7 @@
       },
 
       onitemclk(ido, from_search = false) {
-        console.log(ido,from_search)
+        console.log(ido, from_search)
         this.dlgW = ido.fields.word
         this.dlgM = ido.fields.meaning
         this.dlgid = ido.pk
@@ -798,12 +816,13 @@
             this.snc_msg('info', 'warning', '已存在，意思一样不会更新')
           else if (res.data.error_num === 3)
             this.snc_msg('info', 'info', '已存在，已更新')
-          this.val_si = ''
-          this.val_sis = ''
+          // this.val_si = ''
+          // this.val_sis = ''
           this.show_search_add = false
-          this.$refs.svi.focus()
+          // this.$refs.svi.focus()
           this.search_res = []
           this.refresh()
+          this.searchido()
         }).catch((error) => {
           console.log('Error:', error)
           this.snc_msg('warning', 'error', error)
