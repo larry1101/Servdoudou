@@ -206,7 +206,7 @@
       </mu-appbar>
       <div style="padding: 8px;">
         <mu-flex justify-content="between" align-items="center">
-          <mu-button icon @click="val_si='';show_search_add=false" color="error">
+          <mu-button icon @click="clearSearchIdiom" color="error">
             <mu-icon value="clear"></mu-icon>
           </mu-button>
           <mu-text-field
@@ -229,6 +229,11 @@
           <!--<mu-flex justify-content="between">-->
           <!--{{val_sm}}-->
           <!--</mu-flex>-->
+          <mu-scale-transition>
+            <mu-flex justify-content="center" v-if="show_search_add">
+              <mu-button full-width color="success" @click="quick_add_search">添加这个词</mu-button>
+            </mu-flex>
+          </mu-scale-transition>
         </div>
 
         <mu-container :style="searchlist">
@@ -256,13 +261,7 @@
               </template>
             </mu-list>
           </mu-load-more>
-
         </mu-container>
-        <mu-scale-transition>
-          <mu-flex justify-content="center" v-if="show_search_add">
-            <mu-button full-width color="success" @click="quick_add_search">添加这个词</mu-button>
-          </mu-flex>
-        </mu-scale-transition>
       </div>
     </mu-dialog>
 
@@ -789,6 +788,11 @@
           console.log('Try to get idiom error:', error)
         })
         this.$refs.svi.focus()
+      },
+
+      clearSearchIdiom() {
+        this.val_si = ''
+        this.show_search_add = false
       },
 
       quick_add_search() {
