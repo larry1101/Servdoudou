@@ -270,7 +270,7 @@
         <mu-paper round class="add-paper" :z-depth="4">
           <mu-container>
             <mu-flex justify-content="end">
-              <mu-button flat @click="showadder">
+              <mu-button ref="close_adder" flat @click="showadder">
                 <mu-icon value="arrow_drop_down"></mu-icon>
                 关闭
               </mu-button>
@@ -285,9 +285,10 @@
                 @keydown.ctrl.enter="addido"
                 @keydown.ctrl.right="search_baidu(val_i)"
                 @keydown.ctrl.down="search_baidu_baike(val_i)"
-                @keydown.ctrl.delete="val_i='',val_m=''"
+                @keydown.ctrl.delete="clr_adder"
+                @keydown.ctrl.alt="focus_elm('valm')"
               ></mu-text-field>
-              <mu-button icon @click="val_i=''" color="error">
+              <mu-button ref="validi_clr" icon @click="val_i=''" color="error">
                 <mu-icon value="clear"></mu-icon>
               </mu-button>
             </mu-flex>
@@ -299,7 +300,10 @@
                 full-width label-float :rows="4" :max-length="250"
                 @keydown.ctrl.enter="valm_ok"
                 @focus="onvalmfocus"
-                @keydown.ctrl.delete="val_i='',val_m=''"
+                @keydown.ctrl.delete="clr_adder"
+                @keydown.ctrl.right="search_baidu(val_i)"
+                @keydown.ctrl.down="search_baidu_baike(val_i)"
+                @keydown.ctrl.alt="focus_elm('validi')"
               ></mu-text-field>
               <mu-button icon @click="val_m=''" color="error">
                 <mu-icon value="clear"></mu-icon>
@@ -959,6 +963,12 @@
         window.open('https://www.baidu.com/s?wd=' + val)
       },
 
+      clr_adder() {
+        this.val_i = ''
+        this.val_m = ''
+        this.$refs.validi.focus()
+      },
+
       search_baidu_baike(val) {
         window.open('https://baike.baidu.com/item/' + val)
       },
@@ -967,6 +977,10 @@
         var value = '; ' + document.cookie
         var parts = value.split('; ' + name + '=')
         if (parts.length === 2) return parts.pop().split(';').shift()
+      },
+
+      focus_elm(elem) {
+        this.$refs[elem].focus()
       },
 
     },
